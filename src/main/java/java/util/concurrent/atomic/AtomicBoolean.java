@@ -51,8 +51,11 @@ public class AtomicBoolean implements java.io.Serializable {
     private static final long serialVersionUID = 4654671469794556979L;
     // setup to use Unsafe.compareAndSwapInt for updates
     private static final Unsafe unsafe = Unsafe.getUnsafe();
+
+    //保存修改变量的实际内存地址，通过unsafe.objectFieldOffset读取
     private static final long valueOffset;
 
+    //初始化的时候计算出保存的value的内存地址便于直接进行内存操作
     static {
       try {
         valueOffset = unsafe.objectFieldOffset
@@ -94,6 +97,8 @@ public class AtomicBoolean implements java.io.Serializable {
      * @param update the new value
      * @return true if successful. False return indicates that
      * the actual value was not equal to the expected value.
+     *
+     * 内存中可见的值与期望值一致，则进行update操作，将内存中的值更新为update,并且返回true,否则返回false
      */
     public final boolean compareAndSet(boolean expect, boolean update) {
         int e = expect ? 1 : 0;
